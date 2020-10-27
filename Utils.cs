@@ -15,6 +15,16 @@ namespace UtilsBasic2020
         #region Orther
 
         /// <summary>
+        /// Giống MessageBox.Show
+        /// </summary>
+        public static DialogResult MSG(string msg, string title = "Error",
+            MessageBoxButtons messageBoxButtons = MessageBoxButtons.OK,
+            MessageBoxIcon messageBoxIcon = MessageBoxIcon.Error)
+        {
+            return MessageBox.Show(msg, title, messageBoxButtons, messageBoxIcon);
+        }
+
+        /// <summary>
         /// Thay thế Process.Start(...);
         /// </summary>
         public static void CMD(string input)
@@ -46,15 +56,15 @@ namespace UtilsBasic2020
         /// <summary>
         /// Kiểm tra MaskedTextBox đúng định dạng DateTime hay không có hỗ trợ MessageBox
         /// </summary>
-        public static bool CheckIsBlankMaskedTextBoxDateTimeMSG(MaskedTextBox input, string msg, string title = "Error",
+        public static bool MaskedTextBoxDateTimeMSG(MaskedTextBox input, string msg, string title = "Error",
             MessageBoxButtons messageBoxButtons = MessageBoxButtons.OK,
             MessageBoxIcon messageBoxIcon = MessageBoxIcon.Error)
         {
             if (!CheckIsDateTime(input.Text))
             {
-                MessageBox.Show(msg, title, messageBoxButtons, messageBoxIcon);
+                MSG(msg, title, messageBoxButtons, messageBoxIcon);
                 input.Focus();
-                return false;
+                return false; // Ngăn chăn xử lý trong if
             }
 
             return true;
@@ -66,10 +76,10 @@ namespace UtilsBasic2020
         /// <paramref name="format"/> Có thể là 1 pattern: VD: @"^[\w]{3}[-][\w]{7}$"
         /// </code>
         /// <code>
-        /// VD: Utils.CheckIsBlankTextBoxMSG(MaskedTextBox, @"^[\w]{3}[-][\w]{7}$", "Phone is invalid.", "Error");
+        /// VD: Utils.MaskedTextBoxMSG(MaskedTextBox, @"^[\w]{3}[-][\w]{7}$", "Phone is invalid.", "Error");
         /// </code>
         /// </summary>
-        public static bool CheckIsBlankMaskedTextBoxMSG(MaskedTextBox input, string format, string msg, string title = "Error",
+        public static bool MaskedTextBoxMSG(MaskedTextBox input, string format, string msg, string title = "Error",
             MessageBoxButtons messageBoxButtons = MessageBoxButtons.OK,
             MessageBoxIcon messageBoxIcon = MessageBoxIcon.Error)
         {
@@ -93,12 +103,12 @@ namespace UtilsBasic2020
 
             if (flag)
             {
-                MessageBox.Show(msg, title, messageBoxButtons, messageBoxIcon);
+                MSG(msg, title, messageBoxButtons, messageBoxIcon);
                 input.Focus();
-                return false;
+                return false; // Ngăn chăn xử lý trong if
             }
 
-            return true;
+            return flag;
         }
 
         #endregion
@@ -111,10 +121,10 @@ namespace UtilsBasic2020
         /// <paramref name="format"/> Có thể là 1 pattern: VD: @"^[\w]{3,}@[\w]{2,}(.[/\w]{2,}){1,2}$"
         /// </code>
         /// <code>
-        /// VD: Utils.CheckIsBlankTextBoxMSG(TextBox, @"^[\w]{3,}@[\w]{2,}(.[/\w]{2,}){1,2}$", "Email is invalid.", "Error");
+        /// VD: Utils.TextBoxMSG(TextBox, @"^[\w]{3,}@[\w]{2,}(.[/\w]{2,}){1,2}$", "Email is invalid.", "Error");
         /// </code>
         /// </summary>
-        public static bool CheckIsBlankTextBoxMSG(TextBox input, string format, string msg, string title = "Error",
+        public static bool TextBoxMSG(TextBox input, string format, string msg, string title = "Error",
             MessageBoxButtons messageBoxButtons = MessageBoxButtons.OK,
             MessageBoxIcon messageBoxIcon = MessageBoxIcon.Error)
         {
@@ -139,16 +149,16 @@ namespace UtilsBasic2020
 
             if (flag)
             {
-                MessageBox.Show(msg, title, messageBoxButtons, messageBoxIcon);
+                MSG(msg, title, messageBoxButtons, messageBoxIcon);
                 input.Focus();
-                return false;
+                return flag;
+                // return false; // Ngăn chăn xử lý trong if
             }
 
-            return true;
+            return flag;
         }
 
         #endregion
-
 
     }
 
