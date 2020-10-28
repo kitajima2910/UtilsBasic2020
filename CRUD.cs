@@ -35,6 +35,10 @@ namespace UtilsBasic2020
             try
             {
                 connection = new SqlConnection(url);
+                if (connection.State != ConnectionState.Open)
+                {
+                    connection.Open();
+                }
             }
             catch (Exception ex)
             {
@@ -43,7 +47,31 @@ namespace UtilsBasic2020
             
         }
 
+        public SqlConnection Connection { get => connection; set => connection = value; }
+
         #region Orther
+
+        /// <summary>
+        /// Check SqlConnection is Open
+        /// </summary>
+        public void CheckConnection(SqlConnection conn)
+        {
+            if (conn.State != ConnectionState.Open)
+            {
+                conn.Open();
+            }
+        }
+
+        /// <summary>
+        /// Chạy tham số và giá trị
+        /// </summary>
+        public void ParamsAndValues(SqlCommand cmd, string[] parameters, object[] values)
+        {
+            for(int i = 0; i < parameters.Length; i++)
+            {
+                cmd.Parameters.AddWithValue(parameters[i], values[i]);
+            }
+        }
 
         /// <summary>
         /// Đỗ dữ liệu trong DataTable vào DataGridView
@@ -79,7 +107,7 @@ namespace UtilsBasic2020
                 sql.Append(tableName);
                 //command = new SqlCommand("select * from Account", connection);
                 command = new SqlCommand(sql.ToString(), connection);
-                //command.Parameters.AddWithValue("table", table);
+                //command.Parameters.AddWithValue("@table", table);
                 adapter = new SqlDataAdapter(command);
                 dataTable = new DataTable();
                 adapter.Fill(dataTable);
@@ -100,7 +128,11 @@ namespace UtilsBasic2020
         /// </summary>
         public DataTable LoadDataTableTwo(string tableName, string[] fields = null)
         {
-            connection.Open();
+            if(connection.State != ConnectionState.Open)
+            {
+                connection.Open();
+            }
+            
             try
             {
 
@@ -118,7 +150,7 @@ namespace UtilsBasic2020
                 sql.Append(tableName);
 
                 command = new SqlCommand(sql.ToString(), connection);
-                //command.Parameters.AddWithValue("table", table);
+                //command.Parameters.AddWithValue("@table", table);
                 reader = command.ExecuteReader();
                 dataTable = new DataTable();
                 dataTable.Load(reader);

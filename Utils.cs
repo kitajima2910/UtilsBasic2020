@@ -73,10 +73,13 @@ namespace UtilsBasic2020
         /// <summary>
         /// Kiểm tra MaskedTextBox có dữ liệu nhập vào hay không có hỗ trợ MessageBox
         /// <code>
-        /// <paramref name="format"/> Có thể là 1 pattern: VD: @"^[\w]{3}[-][\w]{7}$"
+        /// <paramref name="format"/> Có thể là 1 pattern: VD: @"^[\w]{3}[-][\w]{7}$" (điền đúng, nhập sai)
         /// </code>
         /// <code>
         /// VD: Utils.MaskedTextBoxMSG(MaskedTextBox, @"^[\w]{3}[-][\w]{7}$", "Phone is invalid.", "Error");
+        /// </code>
+        /// <code>
+        /// Cách dùng: if(Utils.MaskedTextBoxMSG(...)) { return; }
         /// </code>
         /// </summary>
         public static bool MaskedTextBoxMSG(MaskedTextBox input, string format, string msg, string title = "Error",
@@ -105,7 +108,8 @@ namespace UtilsBasic2020
             {
                 MSG(msg, title, messageBoxButtons, messageBoxIcon);
                 input.Focus();
-                return false; // Ngăn chăn xử lý trong if
+                return flag;
+                //return false; // Ngăn chăn xử lý trong if
             }
 
             return flag;
@@ -118,10 +122,13 @@ namespace UtilsBasic2020
         /// <summary>
         /// Kiểm tra TextBox có dữ liệu nhập vào hay không có hỗ trợ MessageBox
         /// <code>
-        /// <paramref name="format"/> Có thể là 1 pattern: VD: @"^[\w]{3,}@[\w]{2,}(.[/\w]{2,}){1,2}$"
+        /// <paramref name="format"/> Có thể là 1 pattern: VD: @"^[\w]{3,}@[\w]{2,}(.[/\w]{2,}){1,2}$" (điền đúng, nhập sai)
         /// </code>
         /// <code>
         /// VD: Utils.TextBoxMSG(TextBox, @"^[\w]{3,}@[\w]{2,}(.[/\w]{2,}){1,2}$", "Email is invalid.", "Error");
+        /// </code>
+        /// <code>
+        /// Cách dùng: if(Utils.TextBoxMSG(...)) { return; }
         /// </code>
         /// </summary>
         public static bool TextBoxMSG(TextBox input, string format, string msg, string title = "Error",
@@ -152,7 +159,7 @@ namespace UtilsBasic2020
                 MSG(msg, title, messageBoxButtons, messageBoxIcon);
                 input.Focus();
                 return flag;
-                // return false; // Ngăn chăn xử lý trong if
+                //return false; // Ngăn chăn xử lý trong if
             }
 
             return flag;
