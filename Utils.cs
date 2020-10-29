@@ -167,6 +167,56 @@ namespace UtilsBasic2020
 
         #endregion
 
+        #region Lable
+
+        /// <summary>
+        /// Kiểm tra TextBox có dữ liệu nhập vào hay không có hỗ trợ MessageBox
+        /// <code>
+        /// <paramref name="format"/> Có thể là 1 pattern: VD: @"^[\w]{3,}@[\w]{2,}(.[/\w]{2,}){1,2}$" (điền đúng, nhập sai)
+        /// </code>
+        /// <code>
+        /// VD: Utils.TextBoxMSG(TextBox, @"^[\w]{3,}@[\w]{2,}(.[/\w]{2,}){1,2}$", "Email is invalid.", "Error");
+        /// </code>
+        /// <code>
+        /// Cách dùng: if(Utils.TextBoxMSG(...)) { return; }
+        /// </code>
+        /// </summary>
+        public static bool LabelMSG(Label input, string format, string msg, string title = "Error",
+            MessageBoxButtons messageBoxButtons = MessageBoxButtons.OK,
+            MessageBoxIcon messageBoxIcon = MessageBoxIcon.Error)
+        {
+
+            string strInput = input.Text.Trim();
+            bool flag = false;
+
+            if (format.Contains("^") && format.Contains("$"))
+            {
+                if (!Regex.IsMatch(strInput, format))
+                {
+                    flag = true;
+                }
+            }
+            else
+            {
+                if (format.Equals(strInput))
+                {
+                    flag = true;
+                }
+            }
+
+            if (flag)
+            {
+                MSG(msg, title, messageBoxButtons, messageBoxIcon);
+                input.Focus();
+                return flag;
+                //return false; // Ngăn chăn xử lý trong if
+            }
+
+            return flag;
+        }
+
+        #endregion
+
     }
 
 }

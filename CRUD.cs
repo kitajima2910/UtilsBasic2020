@@ -17,6 +17,7 @@ namespace UtilsBasic2020
         private DataTable dataTable;
         private SqlDataReader reader;
         private StringBuilder sql;
+        private DataSet dataSet;
 
         public CRUD()
         {
@@ -42,7 +43,7 @@ namespace UtilsBasic2020
             }
             catch (Exception ex)
             {
-                Utils.MSG("Kết nối tới Database thất bại: " + ex.Message);
+                Utils.MSG(ex.Message);
             }
             
         }
@@ -84,12 +85,189 @@ namespace UtilsBasic2020
         #endregion
 
         /// <summary>
+        /// Thêm dữ liệu và database
+        /// <code><paramref name="tableName"/> Tên bảng cần thêm</code>
+        /// <code><paramref name="parameters"/> Danh sách tham số mẫu</code>
+        /// <code><paramref name="values"/> Danh sách tham số có dữ liệu</code>
+        /// <code>Mẫu:</code>
+        /// <code>string[] parametersm = {</code>
+        /// <code>"Title", "Author", "PublisherName", "Edition"</code>
+        /// <code>};</code>
+        /// <code>string[] values = {</code>
+        /// <code>txtTitle.Text, txtAuthor.Text, cbPublisherName.Text, txtEdition.Text</code>
+        /// <code>}</code>
+        /// <code>crud.Insert("Book", parametersm, values);</code>
+        /// </summary>
+        public bool Insert(string tableName, string[] parameters, string[] values)
+        {
+
+            try
+            {
+                string joinInto = string.Join(", ", parameters);
+                StringBuilder joinValues = new StringBuilder();
+
+                for (int i = 0; i < parameters.Length; i++)
+                {
+                    joinValues.Append("@").Append(parameters[i]);
+                    if (i == parameters.Length - 1)
+                    {
+                        break;
+                    }
+                    joinValues.Append(", ");
+                }
+
+                StringBuilder sql = new StringBuilder();
+                sql.Append("insert ").Append("into ").Append(tableName).Append("(")
+                    .Append(joinInto).Append(") ").Append(" values(").Append(joinValues).Append(")");
+                command = new SqlCommand(sql.ToString(), connection);
+                ParamsAndValues(command, parameters, values);
+                adapter = new SqlDataAdapter(command);
+                dataSet = new DataSet();
+                adapter.Fill(dataSet);
+                return true;
+            }
+            catch (Exception ex)
+            {
+                Utils.MSG(ex.Message);
+                return false;
+            }
+        }
+
+        /// <summary>
+        /// Thêm dữ liệu và database
+        /// <code><paramref name="tableName"/> Tên bảng cần thêm</code>
+        /// <code><paramref name="parameters"/> Danh sách tham số mẫu</code>
+        /// <code><paramref name="values"/> Danh sách tham số có dữ liệu</code>
+        /// <code>Mẫu:</code>
+        /// <code>string[] parametersm = {</code>
+        /// <code>"Title", "Author", "PublisherName", "Edition"</code>
+        /// <code>};</code>
+        /// <code>object[] values = {</code>
+        /// <code>book.Title, book.Author, book.PublisherName, book.Edition</code>
+        /// <code>}</code>
+        /// <code>crud.Insert("Book", parametersm, values);</code>
+        /// </summary>
+        public bool Insert(string tableName, string[] parameters, object[] values)
+        {
+            try
+            {
+                string joinInto = string.Join(", ", parameters);
+                StringBuilder joinValues = new StringBuilder();
+
+                for (int i = 0; i < parameters.Length; i++)
+                {
+                    joinValues.Append("@").Append(parameters[i]);
+                    if (i == parameters.Length - 1)
+                    {
+                        break;
+                    }
+                    joinValues.Append(", ");
+                }
+
+                StringBuilder sql = new StringBuilder();
+                sql.Append("insert ").Append("into ").Append(tableName).Append("(")
+                    .Append(joinInto).Append(") ").Append(" values(").Append(joinValues).Append(")");
+                command = new SqlCommand(sql.ToString(), connection);
+                ParamsAndValues(command, parameters, values);
+                adapter = new SqlDataAdapter(command);
+                dataSet = new DataSet();
+                adapter.Fill(dataSet);
+                return true;
+            }
+            catch (Exception ex)
+            {
+                Utils.MSG(ex.Message);
+                return false;
+            }
+            
+        }
+
+        /// <summary>
+        /// Hiển thị dữ liệu vào ComboBox theo fieldShow
+        /// <code>
+        /// <paramref name="comboBox"/> cần hiển thị
+        /// </code>
+        /// <code>
+        /// <paramref name="tableName"/> tên table cần lấy dữ liệu
+        /// </code>
+        /// <code>
+        /// <paramref name="fieldShow"/> cột cần hiển thị dữ liệu
+        /// </code>
+        /// </summary>
+        public void LoadComboBoxDataSet(ComboBox comboBox, string tableName, string fieldShow)
+        {
+            try
+            {
+                string sql = "select * from " + tableName;
+                command = new SqlCommand(sql, connection);
+                adapter = new SqlDataAdapter(command);
+                dataSet = new DataSet();
+                adapter.Fill(dataSet, tableName);
+                comboBox.DataSource = dataSet.Tables[tableName];
+                comboBox.DisplayMember = fieldShow;
+            }
+            catch (Exception ex)
+            {
+                Utils.MSG(ex.Message);
+                return;
+            }
+        }
+
+        /// <summary>
+        /// Đỗ dữ liệu theo disconection
+        /// <code>
+        /// <paramref name="tableName"/> tên bảng
+        /// </code>
+        /// <code>
+        /// <paramref name="dgvView"/> DataGridView
+        /// </code>
+        /// <code>
+        /// <paramref name="fields"/> Tên các trường cần lấy
+        /// </code>
+        /// </summary>
+        public void LoadDataGridViewDataSet(string tableName, DataGridView dgvView, string[] fields = null)
+        {
+            try
+            {
+                if (fields != null && fields.Length > 0)
+                {
+                    string strJoin = string.Join(",", fields);
+                    sql = new StringBuilder();
+                    sql.Append("select ").Append(strJoin).Append(" from ");
+                }
+                else
+                {
+                    sql = new StringBuilder("select * from ");
+                }
+
+                sql.Append(tableName);
+                //string sql = "select * from @tableName";
+                command = new SqlCommand(sql.ToString(), connection);
+                //string[] parameters = { "tableName" };
+                //object[] values = { tableName };
+                //ParamsAndValues(command, parameters, values);
+                adapter = new SqlDataAdapter(command);
+                dataSet = new DataSet();
+                adapter.Fill(dataSet, tableName);
+                dgvView.DataSource = dataSet.Tables[tableName];
+            }
+            catch (Exception ex)
+            {
+                Utils.MSG(ex.Message);
+                return;
+            }
+        }
+
+        /// <summary>
         /// SqlDataAdapter fill DataTable
         /// <code>
         /// <paramref name="table"/> Tên table
         /// </code>
+        /// <code>
+        /// <paramref name="fields"/> Tên các trường cần lấy
+        /// </code>
         /// </summary>
-        public DataTable LoadDataTableOne(string tableName, string[] fields = null)
+        public DataTable LoadDataGridViewDataTableOne(string tableName, string[] fields = null)
         {
             try
             {
@@ -115,7 +293,7 @@ namespace UtilsBasic2020
             }
             catch (Exception ex)
             {
-                Utils.MSG("DataTable không nhận được dữ liệu: " + ex.Message);
+                Utils.MSG(ex.Message);
             }
             return dataTable;
         }
@@ -125,8 +303,11 @@ namespace UtilsBasic2020
         /// <code>
         /// <paramref name="table"/> Tên table
         /// </code>
+        /// <code>
+        /// <paramref name="fields"/> Tên các trường cần lấy
+        /// </code>
         /// </summary>
-        public DataTable LoadDataTableTwo(string tableName, string[] fields = null)
+        public DataTable LoadDataGridViewDataTableTwo(string tableName, string[] fields = null)
         {
             if(connection.State != ConnectionState.Open)
             {
@@ -158,7 +339,7 @@ namespace UtilsBasic2020
             }
             catch (Exception ex)
             {
-                Utils.MSG("DataTable không tải được dữ liệu: " + ex.Message);
+                Utils.MSG(ex.Message);
                 connection.Close();
             }
             connection.Close();
