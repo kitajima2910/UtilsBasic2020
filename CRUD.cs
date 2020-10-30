@@ -120,8 +120,8 @@ namespace UtilsBasic2020
                 if(fields != null && fields.Length > 0)
                 {
                     string joinFields = string.Join(", ", fields);
-                    sql.Append("select ").Append(joinFields).Append(" from")
-                        .Append(tableName).Append(" where ");
+                    sql.Append("select ").Append(joinFields).Append(" from ")
+                        .Append(tableName).Append(" where ").Append(join);
                 }
                 else
                 {
