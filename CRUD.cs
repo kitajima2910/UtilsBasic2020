@@ -461,12 +461,24 @@ namespace UtilsBasic2020
         /// <code>
         /// <paramref name="fieldShow"/> cột cần hiển thị dữ liệu
         /// </code>
+        /// <code>
+        /// <paramref name="distinct"/> cột cần hiển thị dữ liệu không trùng nhau
+        /// </code>
         /// </summary>
-        public void LoadComboBoxDataSet(ComboBox comboBox, string tableName, string fieldShow)
+        public void LoadComboBoxDataSet(ComboBox comboBox, string tableName, string fieldShow, bool distinct = false)
         {
             try
             {
-                string sql = "select * from " + tableName;
+                string sql = "";
+                if (!distinct)
+                {
+                    sql = "select * from " + tableName;
+                }
+                else
+                {
+                    sql = "select distinct " + fieldShow + " from " + tableName;
+                }
+                
                 command = new SqlCommand(sql, connection);
                 adapter = new SqlDataAdapter(command);
                 dataSet = new DataSet();
