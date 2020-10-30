@@ -77,12 +77,280 @@ namespace UtilsBasic2020
         /// <summary>
         /// Đỗ dữ liệu trong DataTable vào DataGridView
         /// </summary>
-        public void LoadDataGridView(DataGridView dataGridView, DataTable dataTable)
+        public void LoadDataToGridView(DataGridView dataGridView, DataTable dataTable)
         {
             dataGridView.DataSource = dataTable;
         }
 
         #endregion
+
+        /// <summary>
+        /// Code Mẫu:
+        /// <para>public void Search(DataGridView dgView, string keyWord) {</para> 
+        /// <para>string[] where = { "Phone", "Location" };</para>
+        /// <para>string[] whereValues = { keyWord, keyWord };</para>
+        /// <para>BookStore.crud.Search(dgView, "Publisher", where, whereValues);</para>
+        /// <para>}</para> 
+        /// </summary>
+        public void Search(DataGridView dgView,  string tableName, string[] where, string[] whereValues, 
+            string[] fields = null, string option = "or")
+        {
+            try
+            {
+                StringBuilder join = new StringBuilder();
+                if(where.Length == 1)
+                {
+                    join.Append(where[0]).Append(" like ").Append("\'%\'+@").Append(where[0]).Append("+\'%\'");
+                }
+                else
+                {
+                    for(int i = 0; i < where.Length; i++)
+                    {
+                        join.Append(where[i]).Append(" like ").Append("\'%\'+@").Append(where[i]).Append("+\'%\'");
+                        if(i == where.Length - 1)
+                        {
+                            break;
+                        }
+                        join.Append(" ").Append(option).Append(" ");
+                    }
+                }
+
+                StringBuilder sql = new StringBuilder();
+
+                if(fields != null && fields.Length > 0)
+                {
+                    string joinFields = string.Join(", ", fields);
+                    sql.Append("select ").Append(joinFields).Append(" from")
+                        .Append(tableName).Append(" where ");
+                }
+                else
+                {
+                    sql.Append("select * from ").Append(tableName).Append(" where ").Append(join);
+                }
+
+                command = new SqlCommand(sql.ToString(), connection);
+                ParamsAndValues(command, where, whereValues);
+                adapter = new SqlDataAdapter(command);
+                dataSet = new DataSet();
+                adapter.Fill(dataSet, tableName);
+                dgView.DataSource = dataSet.Tables[tableName];
+            }
+            catch (Exception ex)
+            {
+                Utils.MSG(ex.Message);
+                return;
+            }
+        }
+
+        /// <summary>
+        /// Xoá dữ liệu
+        /// <code><paramref name="tableName"/> Tên bảng cần thao tác</code>
+        /// <code><paramref name="where"/> Danh sách tham số điều kiện</code>
+        /// <code><paramref name="whereValues"/> Danh sách tham số mapping với where</code>
+        /// <code><paramref name="option"/> Mặc định là and</code>
+        /// </summary>
+        public bool Delete(string tableName, string[] where, object[] whereValues, string option = "and")
+        {
+            try
+            {
+                StringBuilder join = new StringBuilder();
+                if (where.Length == 1)
+                {
+                    join.Append(where[0]).Append("=").Append("@").Append(where[0]);
+                }
+                else
+                {
+                    for (int i = 0; i < where.Length; i++)
+                    {
+                        join.Append(where[i]).Append("=").Append("@").Append(where[i]);
+                        if (i == where.Length - 1)
+                        {
+                            break;
+                        }
+                        join.Append(" ").Append(option).Append(" ");
+                    }
+                }
+
+                StringBuilder sql = new StringBuilder();
+                sql.Append("delete from ").Append(tableName).Append(" where ").Append(join);
+                command = new SqlCommand(sql.ToString(), connection);
+                ParamsAndValues(command, where, whereValues);
+                adapter = new SqlDataAdapter(command);
+                dataSet = new DataSet();
+                adapter.Fill(dataSet, tableName);
+                return true;
+            }
+            catch (Exception ex)
+            {
+                Utils.MSG(ex.Message);
+                return false;
+            }
+        }
+
+        /// <summary>
+        /// Xoá dữ liệu
+        /// <code><paramref name="tableName"/> Tên bảng cần thao tác</code>
+        /// <code><paramref name="where"/> Danh sách tham số điều kiện</code>
+        /// <code><paramref name="whereValues"/> Danh sách tham số mapping với where</code>
+        /// <code><paramref name="option"/> Mặc định là and</code>
+        /// </summary>
+        public bool Delete(string tableName, string[] where, string[] whereValues, string option = "and")
+        {
+            try
+            {
+                StringBuilder join = new StringBuilder();
+                if(where.Length == 1)
+                {
+                    join.Append(where[0]).Append("=").Append("@").Append(where[0]);
+                }
+                else
+                {
+                    for(int i = 0; i < where.Length; i++)
+                    {
+                        join.Append(where[i]).Append("=").Append("@").Append(where[i]);
+                        if(i == where.Length - 1)
+                        {
+                            break;
+                        }
+                        join.Append(" ").Append(option).Append(" ");
+                    }
+                }
+
+                StringBuilder sql = new StringBuilder();
+                sql.Append("delete from ").Append(tableName).Append(" where ").Append(join);
+                command = new SqlCommand(sql.ToString(), connection);
+                ParamsAndValues(command, where, whereValues);
+                adapter = new SqlDataAdapter(command);
+                dataSet = new DataSet();
+                adapter.Fill(dataSet, tableName);
+                return true;
+            }
+            catch (Exception ex)
+            {
+                Utils.MSG(ex.Message);
+                return false;
+            }
+        }
+
+        /// <summary>
+        /// Cập nhật dữ liệu
+        /// <code><paramref name="tableName"/> Tên bảng cần cập nhật</code>
+        /// <code><paramref name="parameters"/> Danh sách tham số cần cập nhật</code>
+        /// <code><paramref name="values"/> Danh sách tham số có giá trị mapping với parameters</code>
+        /// <code><paramref name="where"/> Danh sách tham số điều kiện where</code>
+        /// <code><paramref name="whereValues"/> Danh sách tham số có giá trị mapping với where</code>
+        /// <code><paramref name="option"/> Toán tử logic mặc định là and</code>
+        /// </summary>
+        public bool Update(string tableName, string[] parameters, string[] values,
+            string[] where, string[] whereValues, string option = "and")
+        {
+            try
+            {
+                StringBuilder join = new StringBuilder();
+                for (int i = 0; i < parameters.Length; i++)
+                {
+                    join.Append(parameters[i]).Append("=").Append("@").Append(parameters[i]);
+                    if (i == parameters.Length - 1)
+                    {
+                        break;
+                    }
+                    join.Append(", ");
+                }
+                join.Append(" where ");
+                if (where.Length == 1)
+                {
+                    join.Append(where[0]).Append("=").Append("@").Append(where[0]);
+                }
+                else
+                {
+                    for (int i = 0; i < where.Length; i++)
+                    {
+                        join.Append(where[i]).Append("=").Append("@").Append(where[i]);
+                        if (i == where.Length - 1)
+                        {
+                            break;
+                        }
+                        join.Append(" ").Append(option).Append(" ");
+                    }
+                }
+
+                StringBuilder sql = new StringBuilder();
+                sql.Append("update ").Append(tableName).Append(" set ").Append(join);
+
+                command = new SqlCommand(sql.ToString(), connection);
+                ParamsAndValues(command, parameters, values);
+                ParamsAndValues(command, where, whereValues);
+                adapter = new SqlDataAdapter(command);
+                dataSet = new DataSet();
+                adapter.Fill(dataSet, tableName);
+                return true;
+            }
+            catch (Exception ex)
+            {
+                Utils.MSG(ex.Message);
+                return false;
+            }
+        }
+
+        /// <summary>
+        /// Cập nhật dữ liệu
+        /// <code><paramref name="tableName"/> Tên bảng cần cập nhật</code>
+        /// <code><paramref name="parameters"/> Danh sách tham số cần cập nhật</code>
+        /// <code><paramref name="values"/> Danh sách tham số có giá trị mapping với parameters</code>
+        /// <code><paramref name="where"/> Danh sách tham số điều kiện where</code>
+        /// <code><paramref name="whereValues"/> Danh sách tham số có giá trị mapping với where</code>
+        /// <code><paramref name="option"/> Toán tử logic mặc định là and</code>
+        /// </summary>
+        public bool Update(string tableName, string[] parameters, object[] values, 
+            string[] where, object[] whereValues, string option = "and")
+        {
+            try
+            {
+                StringBuilder join = new StringBuilder();
+                for(int i = 0;  i < parameters.Length; i++)
+                {
+                    join.Append(parameters[i]).Append("=").Append("@").Append(parameters[i]);
+                    if(i == parameters.Length - 1)
+                    {
+                        break;
+                    }
+                    join.Append(", ");
+                }
+                join.Append(" where ");
+                if(where.Length == 1)
+                {
+                    join.Append(where[0]).Append("=").Append("@").Append(where[0]);
+                }
+                else 
+                { 
+                    for(int i = 0; i < where.Length; i++)
+                    {
+                        join.Append(where[i]).Append("=").Append("@").Append(where[i]);
+                        if(i == where.Length - 1)
+                        {
+                            break;
+                        }
+                        join.Append(" ").Append(option).Append(" ");
+                    }
+                }
+
+                StringBuilder sql = new StringBuilder();
+                sql.Append("update ").Append(tableName).Append(" set ").Append(join);
+
+                command = new SqlCommand(sql.ToString(), connection);
+                ParamsAndValues(command, parameters, values);
+                ParamsAndValues(command, where, whereValues);
+                adapter = new SqlDataAdapter(command);
+                dataSet = new DataSet();
+                adapter.Fill(dataSet, tableName);
+                return true;
+            }
+            catch (Exception ex)
+            {
+                Utils.MSG(ex.Message);
+                return false;
+            }
+        }
 
         /// <summary>
         /// Thêm dữ liệu và database
