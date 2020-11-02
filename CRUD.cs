@@ -85,6 +85,7 @@ namespace UtilsBasic2020
         public void LoadDataToGridView(DataGridView dataGridView, DataTable dataTable)
         {
             dataGridView.DataSource = dataTable;
+            dataGridView.ClearSelection();
         }
 
         #endregion
@@ -124,6 +125,9 @@ namespace UtilsBasic2020
                 bindingSource2.DataSource = bindingSource1;
                 dgvView2.DataSource = bindingSource2;
                 bindingSource2.DataMember = "FK_TableName1_TableName2";
+
+                dgvView1.ClearSelection();
+                dgvView2.ClearSelection();
             }
             catch (Exception ex)
             {
@@ -182,6 +186,7 @@ namespace UtilsBasic2020
                 dataSet = new DataSet();
                 adapter.Fill(dataSet, tableName);
                 dgView.DataSource = dataSet.Tables[tableName];
+                dgView.ClearSelection();
             }
             catch (Exception ex)
             {
@@ -605,6 +610,7 @@ namespace UtilsBasic2020
                 dataSet = new DataSet();
                 adapter.Fill(dataSet, tableName);
                 dgvView.DataSource = dataSet.Tables[tableName];
+                dgvView.ClearSelection();
             }
             catch (Exception ex)
             {

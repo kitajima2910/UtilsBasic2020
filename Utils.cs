@@ -6,11 +6,37 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using System.Drawing;
 
 namespace UtilsBasic2020
 {
     public class Utils
     {
+        /// <summary>
+        /// Điểm chuột hiện tại (x, y)
+        /// </summary>
+        public static Point currentPoint;
+
+        /// <summary>
+        /// Lấy toạ độ MouseDown (x, y)
+        /// </summary>
+        public static void MouseDown(MouseEventArgs e)
+        {
+            currentPoint = e.Location;
+        }
+
+        /// <summary>
+        /// Lấy toạ độ MouseMove (x, y)
+        /// </summary>
+        public static void MouseMove(Form form, Point point, MouseEventArgs e)
+        {
+            if (e.Button == MouseButtons.Left)
+            {
+                int dx = e.Location.X - point.X;
+                int dy = e.Location.Y - point.Y;
+                form.Location = new Point(form.Location.X + dx, form.Location.Y + dy);
+            }
+        }
 
         /// <summary>
         /// Reset Controls
