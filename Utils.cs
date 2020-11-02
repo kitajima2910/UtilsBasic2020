@@ -12,6 +12,40 @@ namespace UtilsBasic2020
     public class Utils
     {
 
+        /// <summary>
+        /// Reset Controls
+        /// </summary>
+        public static void ResetControls(Control container)
+        {
+            foreach(Control control in container.Controls)
+            {
+                if (control is TextBox)
+                {
+                    ((TextBox)control).Clear();
+                }
+                else if (control is ComboBox)
+                {
+                    ((ComboBox)control).SelectedIndex = -1;
+                }
+                else if (control is RadioButton)
+                {
+                    ((RadioButton)control).Checked = false;
+                }
+                else if (control is CheckBox)
+                {
+                    ((CheckBox)control).Checked = false;
+                }
+                else if (control is DateTimePicker)
+                {
+                    ((DateTimePicker)control).Value = DateTime.Now; // or null 
+                }
+                else
+                {
+                    ResetControls(control);
+                }
+            }
+        }
+
         #region Orther
 
         /// <summary>

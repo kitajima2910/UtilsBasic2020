@@ -14,10 +14,15 @@ namespace UtilsBasic2020
         private SqlConnection connection;
         private SqlCommand command;
         private SqlDataAdapter adapter;
+        private SqlDataAdapter adapter1;
+        private SqlDataAdapter adapter2;
         private DataTable dataTable;
         private SqlDataReader reader;
         private StringBuilder sql;
         private DataSet dataSet;
+        public BindingSource bindingSource;
+        private BindingSource bindingSource1;
+        private BindingSource bindingSource2;
 
         public CRUD()
         {
@@ -85,6 +90,49 @@ namespace UtilsBasic2020
         #endregion
 
         /// <summary>
+        /// Relations 2 bảng
+        /// <para><paramref name="dgvView1"/> DataGridView cho Table 1</para>
+        /// <para><paramref name="tableName1"/> Tên bảng 1</para>
+        /// <para><paramref name="colunm1"/> Tên cột bảng 1 để mapping tên cột bảng 2</para>
+        /// <para><paramref name="dgvView2"/> DataGridView cho Table 2</para>
+        /// <para><paramref name="tableName2"/> Tên bảng 2</para>
+        /// <para><paramref name="FKcolunm2"/> Tên cột bảng 2 để mapping tên cột bảng 1(phải trùng với bảng 1)</para>
+        /// </summary>
+        public void BindingTwoTable(
+            DataGridView dgvView1, string tableName1, string colunm1,
+            DataGridView dgvView2, string tableName2, string FKcolunm2)
+        {
+
+            try
+            {
+                string sql1 = "select * from " + tableName1;
+                string sql2 = "select * from " + tableName2;
+                adapter1 = new SqlDataAdapter(sql1, connection);
+                adapter2 = new SqlDataAdapter(sql2, connection);
+                dataSet = new DataSet();
+                adapter1.Fill(dataSet, tableName1);
+                adapter2.Fill(dataSet, tableName2);
+
+                dataSet.Relations.Add("FK_TableName1_TableName2", dataSet.Tables[tableName1].Columns[colunm1],
+                    dataSet.Tables[tableName2].Columns[FKcolunm2]);
+
+                bindingSource1 = new BindingSource();
+                bindingSource2 = new BindingSource();
+
+                bindingSource1.DataSource = dataSet.Tables[tableName1];
+                dgvView1.DataSource = bindingSource1;
+                bindingSource2.DataSource = bindingSource1;
+                dgvView2.DataSource = bindingSource2;
+                bindingSource2.DataMember = "FK_TableName1_TableName2";
+            }
+            catch (Exception ex)
+            {
+                Utils.MSG(ex.Message);
+            }
+
+        }
+
+        /// <summary>
         /// Code Mẫu:
         /// <para>public void Search(DataGridView dgView, string keyWord) {</para> 
         /// <para>string[] where = { "Phone", "Location" };</para>
@@ -139,6 +187,40 @@ namespace UtilsBasic2020
             {
                 Utils.MSG(ex.Message);
                 return;
+            }
+        }
+
+        /// <summary>
+        /// BindingsFields
+        /// <para><paramref name="dgvView"/> DataGridView</para>
+        /// <para><paramref name="controls"/> Controls </para>
+        /// <para><paramref name="fielsName"/> Fiels Name</para>
+        /// </summary>
+        public void BindingsFields(DataGridView dgvView, Control[] controls, string[] fielsName)
+        {
+            try
+            {
+                for(int i = 0; i < controls.Length; i++)
+                {
+                    controls[i].DataBindings.Clear();
+                    if(controls[i] is TextBox || controls[i] is Label)
+                    {
+                        controls[i].DataBindings.Add("Text", dgvView.DataSource, fielsName[i]);
+                    }
+                    if (controls[i] is ComboBox)
+                    {
+                        controls[i].DataBindings.Add("SelectedValue", dgvView.DataSource, fielsName[i]);
+                    }
+                    if (controls[i] is DateTimePicker)
+                    {
+                        controls[i].DataBindings.Add("Value", dgvView.DataSource, fielsName[i]);
+                    }
+                }
+
+            }
+            catch (Exception ex)
+            {
+                Utils.MSG(ex.Message);
             }
         }
 
@@ -493,18 +575,6 @@ namespace UtilsBasic2020
             }
         }
 
-        /// <summary>
-        /// Đỗ dữ liệu theo disconection
-        /// <code>
-        /// <paramref name="tableName"/> tên bảng
-        /// </code>
-        /// <code>
-        /// <paramref name="dgvView"/> DataGridView
-        /// </code>
-        /// <code>
-        /// <paramref name="fields"/> Tên các trường cần lấy
-        /// </code>
-        /// </summary>
         public void LoadDataGridViewDataSet(string tableName, DataGridView dgvView, string[] fields = null)
         {
             try
