@@ -217,6 +217,11 @@ namespace UtilsBasic2020
                     }
                 }
 
+                foreach(Control control in controls)
+                {
+                    control.DataBindings.Clear();
+                }
+
             }
             catch (Exception ex)
             {
