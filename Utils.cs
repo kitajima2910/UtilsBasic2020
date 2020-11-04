@@ -10,8 +10,26 @@ using System.Drawing;
 
 namespace UtilsBasic2020
 {
-    public class Utils
+    public class Utils : Form
     {
+
+        /// <summary>
+        /// Check From initMDI
+        /// </summary>
+        public void initMDI(Form from)
+        {
+            foreach (Form frm in MdiChildren)
+            {
+                if (frm.Text.Equals(from.Text))
+                {
+                    return;
+                }
+            }
+
+            from.MdiParent = this;
+            from.Show();
+        }
+
         /// <summary>
         /// Điểm chuột hiện tại (x, y)
         /// </summary>
@@ -20,7 +38,7 @@ namespace UtilsBasic2020
         /// <summary>
         /// Lấy toạ độ MouseDown (x, y)
         /// </summary>
-        public static void MouseDown(MouseEventArgs e)
+        public static void MouseDownFrm(MouseEventArgs e)
         {
             currentPoint = e.Location;
         }
@@ -28,7 +46,7 @@ namespace UtilsBasic2020
         /// <summary>
         /// Lấy toạ độ MouseMove (x, y)
         /// </summary>
-        public static void MouseMove(Form form, Point point, MouseEventArgs e)
+        public static void MouseMoveFrm(Form form, Point point, MouseEventArgs e)
         {
             if (e.Button == MouseButtons.Left)
             {

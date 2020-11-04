@@ -568,7 +568,7 @@ namespace UtilsBasic2020
                 }
                 else
                 {
-                    sql = "select distinct " + fieldShow + " from " + tableName;
+                    sql = "select distinct * from " + tableName;
                 }
                 
                 command = new SqlCommand(sql, connection);
@@ -577,6 +577,55 @@ namespace UtilsBasic2020
                 adapter.Fill(dataSet, tableName);
                 comboBox.DataSource = dataSet.Tables[tableName];
                 comboBox.DisplayMember = fieldShow;
+            }
+            catch (Exception ex)
+            {
+                Utils.MSG(ex.Message);
+                return;
+            }
+        }
+
+        /// <summary>
+        /// Hiển thị dữ liệu vào ComboBox theo fieldShow
+        /// <code>
+        /// <paramref name="comboBox"/> cần hiển thị
+        /// </code>
+        /// <code>
+        /// <paramref name="tableName"/> tên table cần lấy dữ liệu
+        /// </code>
+        /// <code>
+        /// <paramref name="fieldShow"/> cột cần hiển thị dữ liệu
+        /// </code>
+        /// <code>
+        /// <paramref name="fieldID"/> cột chứa giá trị ID
+        /// </code>
+        /// <code>
+        /// <paramref name="distinct"/> cột cần hiển thị dữ liệu không trùng nhau
+        /// </code>
+        /// </summary>
+        public void LoadComboBoxDataSet(ComboBox comboBox, string tableName, string fieldShow, string fieldID, bool distinct = false)
+        {
+            try
+            {
+                string sql = "";
+                if (!distinct)
+                {
+                    sql = "select * from " + tableName;
+                }
+                else
+                {
+                    sql = "select distinct * from " + tableName;
+                }
+
+                command = new SqlCommand(sql, connection);
+                adapter = new SqlDataAdapter(command);
+                dataSet = new DataSet();
+                adapter.Fill(dataSet, tableName);
+                comboBox.DataSource = dataSet.Tables[tableName];
+                comboBox.ValueMember = fieldID;
+                comboBox.DisplayMember = fieldShow;
+
+
             }
             catch (Exception ex)
             {
