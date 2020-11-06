@@ -33,6 +33,7 @@ namespace UtilsBasic2020
         /// Chuỗi kết nối tới Database
         /// <code>
         /// <paramref name="url"/> 
+        /// @"Data Source =.\sqlexpress;Initial Catalog = Lab8DB; Integrated Security = True"
         /// @"Data Source=.\SQLEXPRESS;Initial Catalog=BankDB;User ID=sa;Password=848028;Pooling=False"
         /// </code>
         /// </summary>
@@ -89,6 +90,50 @@ namespace UtilsBasic2020
         }
 
         #endregion
+
+        /// <summary>
+        /// Kiểm tra các fields
+        /// <para><paramref name="tableName"/> Tên table name</para>
+        /// <para><paramref name="where"/> Các giá trị tên fields trong table</para>
+        /// <para><paramref name="whereValues"/> Các giá trị mapping với where</para>
+        /// <para><paramref name="option"/> Default option: and</para>
+        /// </summary>
+        public bool CheckFields(string tableName, string[] where, string[] whereValues, string option = "and")
+        {
+            try
+            {
+                StringBuilder sql = new StringBuilder();
+                sql.Append("select * from ").Append(tableName).Append(" where ");
+
+                for(int i = 0; i < where.Length; i++)
+                {
+                    sql.Append(where[i]).Append("=@").Append(where[i]);
+                    if(i == where.Length - 1)
+                    {
+                        break;
+                    }
+                    sql.Append(" ").Append(option).Append(" ");
+                }
+
+                command = new SqlCommand(sql.ToString(), connection);
+                ParamsAndValues(command, where, whereValues);
+                adapter = new SqlDataAdapter(command);
+                dataSet = new DataSet();
+                adapter.Fill(dataSet, tableName);
+
+                if(dataSet.Tables[tableName].Rows.Count > 0)
+                {
+                    return true;
+                }
+
+                return false;
+            }
+            catch (Exception ex)
+            {
+                Utils.MSG(ex.Message);
+                return false;
+            }
+        }
 
         /// <summary>
         /// Relations 2 bảng
