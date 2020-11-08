@@ -230,7 +230,9 @@ namespace UtilsBasic2020
                 adapter = new SqlDataAdapter(command);
                 dataSet = new DataSet();
                 adapter.Fill(dataSet, tableName);
-                dgView.DataSource = dataSet.Tables[tableName];
+                bindingSource = new BindingSource();
+                bindingSource.DataSource = dataSet.Tables[tableName];
+                dgView.DataSource = bindingSource;
                 dgView.ClearSelection();
             }
             catch (Exception ex)
@@ -613,7 +615,7 @@ namespace UtilsBasic2020
                 }
                 else
                 {
-                    sql = "select distinct * from " + tableName;
+                    sql = "select distinct " + fieldShow + " from " + tableName;
                 }
                 
                 command = new SqlCommand(sql, connection);
@@ -695,15 +697,13 @@ namespace UtilsBasic2020
                 }
 
                 sql.Append(tableName);
-                //string sql = "select * from @tableName";
                 command = new SqlCommand(sql.ToString(), connection);
-                //string[] parameters = { "tableName" };
-                //object[] values = { tableName };
-                //ParamsAndValues(command, parameters, values);
                 adapter = new SqlDataAdapter(command);
                 dataSet = new DataSet();
                 adapter.Fill(dataSet, tableName);
-                dgvView.DataSource = dataSet.Tables[tableName];
+                bindingSource = new BindingSource();
+                bindingSource.DataSource = dataSet.Tables[tableName];
+                dgvView.DataSource = bindingSource;
                 dgvView.ClearSelection();
             }
             catch (Exception ex)

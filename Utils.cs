@@ -7,11 +7,62 @@ using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Drawing;
+using System.Drawing.Printing;
 
 namespace UtilsBasic2020
 {
     public class Utils
     {
+
+        #region
+        private static string contentPrint = "";
+        private static int sizeFont = 15;
+        private static string styleFont = "Tohoma";
+
+        public static void ContentPrint(string content)
+        {
+            contentPrint = content;
+            ProcessPrint();
+        }
+
+        public static void ContentPrint(string content, int sizeFontCus)
+        {
+            contentPrint = content;
+            sizeFont = sizeFontCus;
+            ProcessPrint();
+        }
+
+        public static void ContentPrint(string content, string styleFontCus)
+        {
+            contentPrint = content;
+            styleFont = styleFontCus;
+            ProcessPrint();
+        }
+
+        public static void ContentPrint(string content, string styleFontCus, int sizeFontCus)
+        {
+            contentPrint = content;
+            styleFont = styleFontCus;
+            sizeFont = sizeFontCus;
+            ProcessPrint();
+        }
+
+        private static void ProcessPrint()
+        {
+            var ppd = new PrintPreviewDialog();
+            var pd = new PrintDocument();
+            pd.PrintPage += Pd_PrintPAge;
+            ppd.Document = pd;
+            ppd.ShowDialog();
+        }
+
+        private static void Pd_PrintPAge(object sender, PrintPageEventArgs e)
+        {
+            Graphics graphics = e.Graphics;
+            graphics.DrawString(contentPrint, new Font(styleFont, sizeFont), Brushes.Blue, 100, 100);
+        }
+        #endregion
+
 
         /// <summary>
         /// Điểm chuột hiện tại (x, y)
