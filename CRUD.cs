@@ -261,11 +261,15 @@ namespace UtilsBasic2020
                     }
                     if (controls[i] is ComboBox)
                     {
-                        controls[i].DataBindings.Add("SelectedValue", dgvView.DataSource, fielsName[i]);
+                        controls[i].DataBindings.Add("Text", dgvView.DataSource, fielsName[i]);
                     }
                     if (controls[i] is DateTimePicker)
                     {
                         controls[i].DataBindings.Add("Value", dgvView.DataSource, fielsName[i]);
+                    }
+                    if (controls[i] is CheckBox || controls[i] is RadioButton)
+                    {
+                        controls[i].DataBindings.Add("Checked", dgvView.DataSource, fielsName[i]);
                     }
                 }
 
